@@ -1,19 +1,22 @@
 package main
 
 import (
-	"mvc_golang/app/config"
 	"mvc_golang/app/controller"
+	"mvc_golang/app/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := config.DBInit()
-	inDB := &controller.InDB{DB: db}
 
 	router := gin.Default()
 	router.Use(cors.Default())
-	router.GET("/", inDB.CreateAccount)
+	router.POST("/api/v1/account/add", controller.CreateAccount)
+	router.POST("/api/v1/login", controller.Login)
+	router.GET("/api/v1/account", middleware.Auth, controller.GetAccount)
+	router.POST("/api/v1/transfer", middleware.Auth, controller.Transfer)
+	router.POST("/api/v1/withdraw", middleware.Auth, controller.Withdraw)
+	router.POST("/api/v1/deposit", middleware.Auth, controller.Deposit)
 	router.Run(":9090")
 }
